@@ -15,7 +15,7 @@ class FBX2glTFConan(ConanFile):
         ("libxml2/2.9.12"),
         ("fmt/5.3.0"),
     )
-    generators = "CMakeDeps", "CMakeToolchain"
+    generators = "CMakeDeps"
 
     def configure(self):
         if (
