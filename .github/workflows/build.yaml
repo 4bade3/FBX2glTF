@@ -270,7 +270,7 @@ jobs:
       
       - name: Conan build
         run: |
-          env CMAKE_OSX_ARCHITECTURES=x86_64 conan build -bf build .
+          env CMAKE_OSX_ARCHITECTURES=x86_64 conan build conanfile.py
         shell: bash
 
       - name: Run FBX2glTF help
