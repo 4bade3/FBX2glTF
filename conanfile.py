@@ -3,7 +3,7 @@
 
 import os
 
-from conans import ConanFile, CMake
+from conan import ConanFile, CMake
 
 
 class FBX2glTFConan(ConanFile):
