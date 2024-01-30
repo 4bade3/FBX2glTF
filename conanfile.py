@@ -7,7 +7,7 @@ from conan.tools.cmake import CMake
 
 
 class FBX2glTFConan(ConanFile):
-    settings = "os", "compiler", "build_type", "arch", "os.subsystem", "os.subsystem.ios_version"
+    settings = "os", "compiler", "build_type", "arch"
     requires = (
         ("boost/1.78.0"),
         ("libiconv/1.17"),
