@@ -213,7 +213,7 @@ jobs:
 
       - name: Install conan
         run: |
-          pip install --upgrade conan==1.58
+          pip install --upgrade conan==2.0.17
         shell: bash
 
       - name: Setup conan profile
