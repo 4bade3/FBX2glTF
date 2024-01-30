@@ -15,189 +15,189 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-windows:
-    runs-on: windows-2019
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # build-windows:
+  #   runs-on: windows-2019
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install conan
-        run: |
-          pip install --upgrade conan==1.58
-        shell: bash
+  #     - name: Install conan
+  #       run: |
+  #         pip install --upgrade conan==1.58
+  #       shell: bash
 
-      - name: Setup conan profile
-        run: |
-          conan profile new default --detect
-          conan profile show default
-        shell: bash
+  #     - name: Setup conan profile
+  #       run: |
+  #         conan profile new default --detect
+  #         conan profile show default
+  #       shell: bash
 
-      - name: Setup filter.lfs.required
-        run: |
-          git config --global filter.lfs.required false
-        shell: bash
+  #     - name: Setup filter.lfs.required
+  #       run: |
+  #         git config --global filter.lfs.required false
+  #       shell: bash
 
-      - name: Setup filter.lfs.smudge
-        run: |
-          git config --global filter.lfs.smudge "git-lfs smudge --skip %f"
-        shell: bash
+  #     - name: Setup filter.lfs.smudge
+  #       run: |
+  #         git config --global filter.lfs.smudge "git-lfs smudge --skip %f"
+  #       shell: bash
 
-      - name: Setup filter.lfs.process
-        run: |
-          git config --global filter.lfs.process "git-lfs filter-process --skip"
-        shell: bash
+  #     - name: Setup filter.lfs.process
+  #       run: |
+  #         git config --global filter.lfs.process "git-lfs filter-process --skip"
+  #       shell: bash
 
-      - name: Fetch sdk
-        run: |
-          curl -O -L "https://github.com/V-Sekai/FBXSDK-Windows/archive/refs/tags/2020.2.zip"
-        shell: cmd
+  #     - name: Fetch sdk
+  #       run: |
+  #         curl -O -L "https://github.com/V-Sekai/FBXSDK-Windows/archive/refs/tags/2020.2.zip"
+  #       shell: cmd
 
-      - name: install 7z extract
-        run: |
-          7z x 2020.2.zip
-        shell: cmd
+  #     - name: install 7z extract
+  #       run: |
+  #         7z x 2020.2.zip
+  #       shell: cmd
 
-      - name: move
-        run: |
-          mkdir -p sdk
-          mv ./FBXSDK-Windows-2020.2/sdk .
-        shell: bash
+  #     - name: move
+  #       run: |
+  #         mkdir -p sdk
+  #         mv ./FBXSDK-Windows-2020.2/sdk .
+  #       shell: bash
 
-      - name: Decompress sdk
-        run: |
-          zstd -d -r --rm ./sdk || true
-        shell: bash
+  #     - name: Decompress sdk
+  #       run: |
+  #         zstd -d -r --rm ./sdk || true
+  #       shell: bash
 
-      - name: Conan install
-        run: |
-          conan install . -i build -s build_type=Release -s compiler="Visual Studio" --build missing
-        shell: cmd
+  #     - name: Conan install
+  #       run: |
+  #         conan install . -i build -s build_type=Release -s compiler="Visual Studio" --build missing
+  #       shell: cmd
 
-      - name: Conan build
-        run: |
-          conan build -bf build .
-        shell: cmd
+  #     - name: Conan build
+  #       run: |
+  #         conan build -bf build .
+  #       shell: cmd
 
-      - name: Run FBX2glTF help
-        run: |
-          ./build/Release/FBX2glTF.exe --help
-        shell: bash
+  #     - name: Run FBX2glTF help
+  #       run: |
+  #         ./build/Release/FBX2glTF.exe --help
+  #       shell: bash
 
-      - name: Prepare artifacts
-        run: |
-          export TARGET=FBX2glTF-windows-x86_64
-          mkdir $TARGET
-          cp sdk/Windows/2020.2/License.rtf $TARGET/FBX-SDK-License.rtf
-          cp LICENSE $TARGET/FBX2glTF-License.txt
-          cp build/Release/FBX2glTF.exe $TARGET/FBX2glTF-windows-x86_64.exe
-          7z a -r $TARGET.zip $TARGET
-        shell: bash
+  #     - name: Prepare artifacts
+  #       run: |
+  #         export TARGET=FBX2glTF-windows-x86_64
+  #         mkdir $TARGET
+  #         cp sdk/Windows/2020.2/License.rtf $TARGET/FBX-SDK-License.rtf
+  #         cp LICENSE $TARGET/FBX2glTF-License.txt
+  #         cp build/Release/FBX2glTF.exe $TARGET/FBX2glTF-windows-x86_64.exe
+  #         7z a -r $TARGET.zip $TARGET
+  #       shell: bash
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            FBX2glTF-windows-x86_64.zip
-            FBX2glTF-windows-x86_64/FBX2glTF-License.txt
-            FBX2glTF-windows-x86_64/FBX-SDK-License.rtf
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v1
+  #       if: startsWith(github.ref, 'refs/tags/')
+  #       with:
+  #         files: |
+  #           FBX2glTF-windows-x86_64.zip
+  #           FBX2glTF-windows-x86_64/FBX2glTF-License.txt
+  #           FBX2glTF-windows-x86_64/FBX-SDK-License.rtf
 
-      - name: FBX2glTF-windows-x86_64
-        uses: actions/upload-artifact@v3
-        with:
-          name: FBX2glTF-windows-x86_64
-          path: FBX2glTF-windows-x86_64/*
+  #     - name: FBX2glTF-windows-x86_64
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: FBX2glTF-windows-x86_64
+  #         path: FBX2glTF-windows-x86_64/*
 
 
-  build-linux:
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+  # build-linux:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Install conan
-        run: |
-          pip install --upgrade conan==1.58
-        shell: bash
+  #     - name: Install conan
+  #       run: |
+  #         pip install --upgrade conan==1.58
+  #       shell: bash
 
-      - name: Setup conan profile
-        run: |
-          conan profile new default --detect
-          conan profile show default
-        shell: bash
+  #     - name: Setup conan profile
+  #       run: |
+  #         conan profile new default --detect
+  #         conan profile show default
+  #       shell: bash
 
-      - name: Setup filter.lfs.required
-        run: |
-          git config --global filter.lfs.required false
-        shell: bash
+  #     - name: Setup filter.lfs.required
+  #       run: |
+  #         git config --global filter.lfs.required false
+  #       shell: bash
 
-      - name: Setup filter.lfs.smudge
-        run: |
-          git config --global filter.lfs.smudge "git-lfs smudge --skip %f"
-        shell: bash
+  #     - name: Setup filter.lfs.smudge
+  #       run: |
+  #         git config --global filter.lfs.smudge "git-lfs smudge --skip %f"
+  #       shell: bash
 
-      - name: Setup filter.lfs.process
-        run: |
-          git config --global filter.lfs.process "git-lfs filter-process --skip"
-        shell: bash
+  #     - name: Setup filter.lfs.process
+  #       run: |
+  #         git config --global filter.lfs.process "git-lfs filter-process --skip"
+  #       shell: bash
 
-      - name: Fetch sdk
-        run: |
-          curl -O -L "https://github.com/V-Sekai/FBXSDK-Linux/archive/refs/tags/2020.2.zip"
-        shell: bash
+  #     - name: Fetch sdk
+  #       run: |
+  #         curl -O -L "https://github.com/V-Sekai/FBXSDK-Linux/archive/refs/tags/2020.2.zip"
+  #       shell: bash
 
-      - name: install 7z extract
-        run: |
-          7z x 2020.2.zip
-        shell: bash
+  #     - name: install 7z extract
+  #       run: |
+  #         7z x 2020.2.zip
+  #       shell: bash
 
-      - name: move
-        run: |
-          mkdir -p sdk
-          mv ./FBXSDK-Linux-2020.2/sdk .
-        shell: bash
+  #     - name: move
+  #       run: |
+  #         mkdir -p sdk
+  #         mv ./FBXSDK-Linux-2020.2/sdk .
+  #       shell: bash
 
-      - name: Decompress sdk
-        run: |
-          zstd -d -r --rm ./sdk || true
-        shell: bash
+  #     - name: Decompress sdk
+  #       run: |
+  #         zstd -d -r --rm ./sdk || true
+  #       shell: bash
 
-      - name: Conan install
-        run: |
-          conan install . -i build -s build_type=Release --build fmt -s compiler.libcxx=libstdc++11 --build missing
-        shell: bash
+  #     - name: Conan install
+  #       run: |
+  #         conan install . -i build -s build_type=Release --build fmt -s compiler.libcxx=libstdc++11 --build missing
+  #       shell: bash
 
-      - name: Conan build
-        run: |
-          conan build -bf build .
-        shell: bash
+  #     - name: Conan build
+  #       run: |
+  #         conan build -bf build .
+  #       shell: bash
 
-      - name: Run FBX2glTF help
-        run: |
-          ./build/FBX2glTF --help
-        shell: bash
+  #     - name: Run FBX2glTF help
+  #       run: |
+  #         ./build/FBX2glTF --help
+  #       shell: bash
 
-      - name: Prepare artifacts
-        run: |
-          export TARGET=FBX2glTF-linux-x86_64
-          mkdir $TARGET
-          cp sdk/Linux/2020.2/License.txt $TARGET/FBX-SDK-License.txt
-          cp LICENSE $TARGET/FBX2glTF-License.txt
-          cp build/FBX2glTF $TARGET/FBX2glTF-linux-x86_64
-          7z a -r $TARGET.zip $TARGET
-        shell: bash
+  #     - name: Prepare artifacts
+  #       run: |
+  #         export TARGET=FBX2glTF-linux-x86_64
+  #         mkdir $TARGET
+  #         cp sdk/Linux/2020.2/License.txt $TARGET/FBX-SDK-License.txt
+  #         cp LICENSE $TARGET/FBX2glTF-License.txt
+  #         cp build/FBX2glTF $TARGET/FBX2glTF-linux-x86_64
+  #         7z a -r $TARGET.zip $TARGET
+  #       shell: bash
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: FBX2glTF-linux-x86_64.zip
+  #     - name: Release
+  #       uses: softprops/action-gh-release@v1
+  #       if: startsWith(github.ref, 'refs/tags/')
+  #       with:
+  #         files: FBX2glTF-linux-x86_64.zip
 
-      - name: FBX2glTF-linux-x86_64
-        uses: actions/upload-artifact@v3
-        with:
-          name: FBX2glTF-linux-x86_64
-          path: FBX2glTF-linux-x86_64/*
+  #     - name: FBX2glTF-linux-x86_64
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: FBX2glTF-linux-x86_64
+  #         path: FBX2glTF-linux-x86_64/*
 
 
   build-macos:
@@ -219,7 +219,7 @@ jobs:
       - name: Setup conan profile
         run: |
           conan profile detect
-          conan profile show default
+          conan profile show -pr default
         shell: bash
 
       - name: Setup filter.lfs.required
@@ -240,11 +240,6 @@ jobs:
       - name: Fetch sdk
         run: |
           curl -O -L "https://github.com/V-Sekai/FBXSDK-Darwin/archive/refs/tags/2020.2.zip"
-        shell: bash
-
-      - name: Install 7z
-        run: |
-          brew install p7zip
         shell: bash
         
       - name: install 7z extract
