@@ -242,6 +242,11 @@ jobs:
           curl -O -L "https://github.com/V-Sekai/FBXSDK-Darwin/archive/refs/tags/2020.2.zip"
         shell: bash
 
+      - name: Install 7z
+        run: |
+          brew install p7zip
+        shell: bash
+        
       - name: install 7z extract
         run: |
           7z x 2020.2.zip
