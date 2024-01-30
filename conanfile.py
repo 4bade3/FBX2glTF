@@ -3,7 +3,7 @@
 
 import os
 from conan import ConanFile
-from conan.tools.cmake import CMake
+from conan.tools.cmake import CMake, CMakeToolchain
 
 
 class FBX2glTFConan(ConanFile):
@@ -30,8 +30,12 @@ class FBX2glTFConan(ConanFile):
                 self.output.warn("os.subsystem.ios_version is not defined. Assuming a default value.")
                 self.settings.os.subsystem.ios_version = "13.0"
 
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.variables["FBXSDK_SDKS"] = os.getenv("FBXSDK_SDKS", "sdk")
+        tc.generate()
+
     def build(self):
         cmake = CMake(self)
-        cmake.definitions["FBXSDK_SDKS"] = os.getenv("FBXSDK_SDKS", "sdk")
         cmake.configure()
         cmake.build()
